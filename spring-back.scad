@@ -2,27 +2,30 @@ $fa = 1;
 $fs = 0.04;
 e = 0.01;
 
+
 module panel() {
-    difference() {
-        cube([184, 184, 8]);
-        translate([42, 32, 0])
-            cube([100, 120, 8 + e]);
-    }
+    height = 8;
+    translate([0,0,height/2])
+        difference() {
+            cube([184, 184, height], center=true);
+            cube([100, 120, height + e], center=true);
+        }
 }
 
 
 module light_trap () {
-    difference() {
-        cube([172, 172, 6]);
-        translate([20, 20, 0])
-            cube([132, 132, 6 + e]);
-    }
+    height = 6;
+    translate([0,0,height/2])
+        difference() {
+            cube([172, 172, height], center=true);
+            cube([132, 132, height + e], center=true);
+        }
 }
 
-module spring_back() {
+module spring_back(outer_dimension) {
     panel();
 
-    translate([6, 6, 8])
+    translate([0, 0, 8])
         light_trap();
 }
 

@@ -3,35 +3,45 @@ $fs = 0.04;
 
 e = 0.01;
 
-module external_form(outer_dimension, inner_dimension, height) {
+module mitered_edge(outer_dimension, height, width) {
     difference() {
-        // Main external form
-        cube([outer_dimension, outer_dimension, height], center=true);
+        cube([outer_dimension, width, height]);
 
-        // Inner cutout
-        cube([inner_dimension, inner_dimension, height + e], center=true);
+        // these create the mitered edges
+        translate([outer_dimension-25, +25, 0])
+        rotate(-45)
+            cube([width + 100, width, height]);
+
+        rotate(45)
+            cube([width + 100, width, height]);
     }
 }
 
-module lens_board_back(outer_dimension, inner_dimension, height) {
+module frame_edge(outer_dimension, height, material_width) {
     difference() {
-        cube([outer_dimension + e, outer_dimension + e, height], center=true);
-        cube([inner_dimension, inner_dimension, height +  e], center=true);
+        mitered_edge(outer_dimension, height, material_width);
+
+        // create the dado 4mm thick by 1/2 material_width
+        translate([0, material_width/2, 4])
+            cube([outer_dimension, material_width, 4]);
     }
 }
 
-module frame(outer_dimension, cutout_length) {
-    lens_board_thickness = 4;
-    outer_thickness = 12;
-    inner_dimension = outer_dimension - (2 * outer_thickness);
-    height = 30;
 
-    union () {
-        external_form(outer_dimension, inner_dimension, height);
+module frame(outer_dimension, height, material_width) {
+    union() {
+        frame_edge(outer_dimension, height, material_width);
 
-        translate([0, 0, lens_board_thickness])
-            lens_board_back(inner_dimension, cutout_length, lens_board_thickness);
+        translate([outer_dimension, 0, 0])
+        rotate(90)
+            frame_edge(outer_dimension, height, material_width);
 
+        translate([outer_dimension, outer_dimension, 0])
+        rotate(180)
+            frame_edge(outer_dimension, height, material_width);
+        
+        translate([0, outer_dimension, 0])
+        rotate(270)
+            frame_edge(outer_dimension, height, material_width);
     }
 }
-
