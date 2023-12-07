@@ -63,7 +63,6 @@ module frame_front(
     }
 }
 
-
 frame_front(
     outer_dimension = 184,
     lens_board_dimension_outer = 140,
