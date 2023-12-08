@@ -3,50 +3,32 @@ $fs = 0.04;
 
 e = 0.01;
 
-use <frame.scad>
-
-module inner_square(
-    outer_dimension,
-    inner_dimension,
-    material_thickness,
-    frame_material_thickness
-) {
-    length = outer_dimension - frame_material_thickness;
-
-    translate([length/2, length/2, material_thickness/2])
-    difference() {
-        cube([length, length, material_thickness], center=true);
-        cube([inner_dimension, inner_dimension, material_thickness+e], center=true);
-    }
-}
+// 25mm == 1 inch
+// 12mm = 1/2 inch
 
 module frame_back(
-    outer_dimension,
-    lens_board_dimension_outer,
-    lens_board_dimension_inner,
     height,
-    frame_material_thickness,
+    depth,
+    margin,
+    baffle_cut_depth,
 ) {
-    dado_offset = frame_material_thickness / 2;
-    union() {
-        frame(outer_dimension, height, frame_material_thickness);
+    difference() {
+        // outer frame
+        cube([height, height, depth]);
 
-        // move the inner frame to the height of the dado
-        translate([dado_offset, dado_offset, 4])
-        color("blue")
-            inner_square(
-                outer_dimension,
-                lens_board_dimension_inner,
-                4,
-                frame_material_thickness
-            );
+        // cut out for front baffles attachment
+        translate([margin, margin, depth-baffle_cut_depth+e])
+            cube([height - (2 * margin), height - (2 * margin), baffle_cut_depth + e]);
+
+        // Cut out for light
+        translate([2 * margin, 2 * margin, -e])
+            cube([height - (4 * margin), height - (4 * margin), depth + e]);
     }
 }
 
 frame_back(
-    outer_dimension = 184,
-    lens_board_dimension_outer = 140,
-    lens_board_dimension_inner = 130,
-    height = 30,
-    frame_material_thickness = 12
+    height = 184,
+    depth = 12,
+    margin=12,
+    baffle_cut_depth=12
 );

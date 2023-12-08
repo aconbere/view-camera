@@ -3,70 +3,37 @@ $fs = 0.04;
 
 e = 0.01;
 
-use <frame.scad>
-
-module inner_square(
-    outer_dimension,
-    inner_dimension,
-    material_thickness,
-    frame_material_thickness
-) {
-    length = outer_dimension - frame_material_thickness;
-
-    translate([length/2, length/2, material_thickness/2])
-    difference() {
-        cube([length, length, material_thickness], center=true);
-        cube([inner_dimension, inner_dimension, material_thickness+e], center=true);
-    }
-}
-
-module outer_square(
-    outer_dimension,
-    inner_dimension,
-    material_thickness
-) {
-    translate([outer_dimension/2, outer_dimension/2, material_thickness/2])
-    difference() {
-        cube([outer_dimension, outer_dimension, material_thickness], center=true);
-        cube([inner_dimension, inner_dimension, material_thickness+e], center=true);
-    }
-}
-
 module frame_front(
-    outer_dimension,
-    lens_board_dimension_outer,
-    lens_board_dimension_inner,
     height,
-    frame_material_thickness,
+    depth,
+    margin,
+    hole_radius,
+    lens_board_depth,
+    baffle_cut_depth,
 ) {
-    dado_offset = frame_material_thickness / 2;
-    union() {
-        frame(outer_dimension, height, frame_material_thickness);
+    difference() {
+        // outer frame
+        cube([height, height, depth]);
 
-        // move the inner frame to the height of the dado
-        translate([dado_offset, dado_offset, 4])
-        color("blue")
-            inner_square(
-                outer_dimension,
-                lens_board_dimension_inner,
-                4,
-                frame_material_thickness
-            );
+        // cut for lens board
+        translate([margin, margin, -e])
+            cube([height - (2 * margin), height- (2 * margin), lens_board_depth + e]);
 
-        color("red")
-        translate([frame_material_thickness, frame_material_thickness, 0])
-            outer_square(
-                outer_dimension - (frame_material_thickness * 2),
-                lens_board_dimension_outer,
-                4
-            );
+        // cut out for rear baffles attachment
+        translate([margin, margin, depth-baffle_cut_depth+e])
+            cube([height - (2 * margin), height- (2 * margin), baffle_cut_depth + e]);
+
+        // cut out for lens
+        translate([height/2, height/2, 0])
+            cylinder(h=depth + e, r=hole_radius);
     }
 }
 
 frame_front(
-    outer_dimension = 184,
-    lens_board_dimension_outer = 140,
-    lens_board_dimension_inner = 120,
-    height = 30,
-    frame_material_thickness = 12
+    height = 184,
+    depth = 12,
+    margin=12,
+    hole_radius=70,
+    lens_board_depth=1.5,
+    baffle_cut_depth=6
 );
