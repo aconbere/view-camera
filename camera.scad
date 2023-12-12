@@ -7,13 +7,14 @@ use <frame-front.scad>
 use <frame-back.scad>
 use <lens-board.scad>
 use <spring-back.scad>
-use <film-holder-seat.scad>
 use <film-holder.scad>
+use <ground-glass.scad>
 
 module camera () {
     lens_board_depth=1.5;
 
     translate([(160/2) + 12, (160/2) + 12, -20])
+    color("black")
         lens_board(160, lens_board_depth);
 
     frame_front(
@@ -55,6 +56,16 @@ module camera () {
             holder_width=184,
             film_gate_height=98.5,
             film_gate_width=120.5
+        );
+
+    translate([12, 30, 140])
+    color("purple")
+        ground_glass(
+            height = 121,
+            width = 184-15.5,
+            depth = 12,
+            film_gate_height=99,
+            film_gate_width=121
         );
 }
 
